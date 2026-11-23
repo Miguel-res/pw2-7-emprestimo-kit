@@ -1,3 +1,15 @@
+create database EmprestimoKit;
+use EmprestimoKit;
+
+create table EmprestimoKit(
+	id_emprestimo BIGINT IDENTITY(1,1),
+	codigo_kit VARCHAR NOT NULL,
+	nome_aluno VARCHAR NOT NULL,
+	horarioRetirada DATETIME2 NOT NULL,
+	horarioLimiteDevolucao DATETIME2 NOT NULL,
+	horarioDevolucaoReal DATETIME2,
+	status_kit VARCHAR
+);
 
 
 
