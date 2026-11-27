@@ -11,6 +11,38 @@ create table EmprestimoKit(
 	status_kit VARCHAR
 );
 
+CREATE PROCEDURE sp_devolucao_real
+	@Devolucao_Real DATETIME2,
+	@Limite_Devolucao DATETIME2,
+	@Status_Kit VARCHAR OUTPUT
+	AS
+	BEGIN
+	DECLARE @Diferenca INT,
+	@Status VARCHAR;
+		SELECT @Diferenca = DATEDIFF(dd, @Limite_Devolucao, @Devolucao_Real) from EmprestimoKit;
+		IF @Diferenca > 0
+			BEGIN
+			SET @Status = 'DEVOLVIDO_COM_ATRASO'
+			END
+
+		ELSE IF @Diferenca <= 0
+			BEGIN
+			SET @Status = 'DEVOLVIDO_NO_PRAZO'
+			END
+
+		ELSE IF @Devolucao_Real = NULL
+			BEGIN
+			SET @Status = 'EM_USO'
+			END
+	SET @Status_Kit = @Status
+	END;
+	GO
+	
+
+DECLARE @Resultado VARCHAR(30);
+EXEC sp_devolucao_real @Devolucao_Real = '2025-05-05', @Limite_Devolucao = '2025-05-04', @Status_Kit = @Resultado OUTPUT;
+SELECT @Resultado AS 'Status do kit';
+
 
 
 
