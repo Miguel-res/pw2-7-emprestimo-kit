@@ -3,15 +3,15 @@ package br.com.etechas.emprestimo.Entity;
 import br.com.etechas.emprestimo.Enums.StatusEnum;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.aspectj.bridge.IMessage;
 
 import java.time.LocalTime;
 
+@Getter
+@Setter
+@Builder
 @Entity
 @Table
 @Data
