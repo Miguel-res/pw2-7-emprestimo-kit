@@ -1,48 +1,42 @@
-create database EmprestimoKit;
-use EmprestimoKit;
+IF DB_ID('EmprestimoKit') IS NULL CREATE DATABASE EmprestimoKit;
+GO
+USE EmprestimoKit;
+GO
+
+-- recria do zero (apaga os dados que ja existirem)
+IF OBJECT_ID('sp_devolucao_real', 'P') IS NOT NULL DROP PROCEDURE sp_devolucao_real;
+IF OBJECT_ID('EmprestimoKit', 'U') IS NOT NULL DROP TABLE EmprestimoKit;
+GO
 
 create table EmprestimoKit(
-	id_emprestimo BIGINT IDENTITY(1,1),
-	codigo_kit VARCHAR NOT NULL,
-	nome_aluno VARCHAR NOT NULL,
-	horarioRetirada DATETIME2 NOT NULL,
-	horarioLimiteDevolucao DATETIME2 NOT NULL,
-	horarioDevolucaoReal DATETIME2,
-	status_kit VARCHAR
+	id_emprestimo BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	codigo_kit VARCHAR(255) NOT NULL,
+	nome_aluno VARCHAR(255) NOT NULL,
+	horarioRetirada TIME NOT NULL,
+	horarioLimiteDevolucao TIME NOT NULL,
+	horarioDevolucaoReal TIME NULL,
+	status_kit VARCHAR(255) NOT NULL,
+	CONSTRAINT ck_status_kit CHECK (status_kit IN ('EM_USO', 'DEVOLVIDO_NO_PRAZO', 'DEVOLVIDO_COM_ATRASO'))
 );
+GO
 
+-- Stored procedure: descobre o status do kit a partir dos horarios
 CREATE PROCEDURE sp_devolucao_real
-	@Devolucao_Real DATETIME2,
-	@Limite_Devolucao DATETIME2,
-	@Status_Kit VARCHAR OUTPUT
-	AS
-	BEGIN
-	DECLARE @Diferenca INT,
-	@Status VARCHAR;
-		SELECT @Diferenca = DATEDIFF(dd, @Limite_Devolucao, @Devolucao_Real) from EmprestimoKit;
-		IF @Diferenca > 0
-			BEGIN
-			SET @Status = 'DEVOLVIDO_COM_ATRASO'
-			END
-
-		ELSE IF @Diferenca <= 0
-			BEGIN
-			SET @Status = 'DEVOLVIDO_NO_PRAZO'
-			END
-
-		ELSE IF @Devolucao_Real = NULL
-			BEGIN
-			SET @Status = 'EM_USO'
-			END
-	SET @Status_Kit = @Status
+	@Devolucao_Real TIME = NULL,
+	@Limite_Devolucao TIME,
+	@Status_Kit VARCHAR(30) OUTPUT
+AS
+BEGIN
+	SET @Status_Kit = CASE
+		WHEN @Devolucao_Real IS NULL THEN 'EM_USO'
+		WHEN @Devolucao_Real > @Limite_Devolucao THEN 'DEVOLVIDO_COM_ATRASO'
+		ELSE 'DEVOLVIDO_NO_PRAZO'
 	END;
-	GO
-	
+END;
+GO
 
+-- Teste da procedure
 DECLARE @Resultado VARCHAR(30);
-EXEC sp_devolucao_real @Devolucao_Real = '2025-05-05', @Limite_Devolucao = '2025-05-04', @Status_Kit = @Resultado OUTPUT;
+EXEC sp_devolucao_real @Devolucao_Real = '15:30', @Limite_Devolucao = '15:00', @Status_Kit = @Resultado OUTPUT;
 SELECT @Resultado AS 'Status do kit';
-
-
-
-
+GO

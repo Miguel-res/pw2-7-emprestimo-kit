@@ -12,7 +12,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/emprestimo")
+@RequestMapping("/api/kits-maker")
 public class EmprestimoKitCrontroller {
 
     @Autowired
