@@ -1,27 +1,23 @@
 package br.com.etechas.emprestimo.Entity;
 
 import br.com.etechas.emprestimo.Enums.StatusEnum;
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.*;
-import org.antlr.v4.runtime.misc.NotNull;
-import org.aspectj.bridge.IMessage;
 
 import java.time.LocalTime;
 
 @Getter
 @Setter
 @Builder
-@Entity
-@Table
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name="EmprestimoKit")
 public class EmprestimoKit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_emprestimo")
-    private int id;
+    private Long id;
     @Column(name="codigo_kit")
     private String codigoKit;
     @Column(name="nome_aluno")
@@ -33,5 +29,6 @@ public class EmprestimoKit {
     @Column(name="horarioDevolucaoReal")
     private LocalTime horarioDevolucaoReal;
     @Column(name="status_kit")
+    @Enumerated(EnumType.STRING)
     private StatusEnum status;
 }
